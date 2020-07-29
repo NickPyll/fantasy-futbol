@@ -39,22 +39,16 @@ solution <- cbind(df, selected = result$solution) %>%
 # but only 11 players can play at a time...
 # so one strategy might be to buy the four cheapest players 
 # and then select the strongest 11 i can...hmm...
-con_mod <- rbind(t(model.matrix(~ pos + 0, df)), 
-             t(model.matrix(~ team + 0, df)), 
-             rep(1, nrow(df)), 
-             df$now_cost)
 
-dir_mod = c("==","==","==","==", 
-        rep("<=", 20),
-        "==",
-        "<=")
-
-rhs_mod = c(1, 3, 5, 2, 
+# modify right side to change position limits
+rhs_mod <- c(1, 3, 5, 2, 
         rep(3, 20),
         11, 
         84)
 
-result_mod <- lp("max", obj, con_mod, dir_mod, rhs_mod, all.bin = TRUE)
+# select team
+result_mod <- lp("max", obj, con, dir, rhs_mod, all.bin = TRUE)
 
+# view solution
 solution_mod <- cbind(df, selected = result_mod$solution) %>%
   filter(selected == 1)
